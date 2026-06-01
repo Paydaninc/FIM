@@ -35,7 +35,7 @@ export default function EstimatesScreen() {
 
   const filtered = search
     ? estimates.filter((e) =>
-        [e.estimateNumber, e.customer?.name, e.customer?.company]
+        [e.estimateNumber, e.customer?.fullName, e.customer?.companyName]
           .join(" ")
           .toLowerCase()
           .includes(search.toLowerCase())
