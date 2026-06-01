@@ -43,7 +43,7 @@ export default function MoreScreen() {
   const businessName = me?.businessName || user?.fullName || "Your Business";
   const email = me?.email || user?.primaryEmailAddress?.emailAddress || "";
 
-  const stripeConnected = stripeStatus?.connected && stripeStatus?.chargesEnabled;
+  const stripeConnected = stripeStatus?.stripeOnboardingComplete && stripeStatus?.stripeChargesEnabled;
 
   return (
     <ScrollView
