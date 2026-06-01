@@ -9,11 +9,11 @@ on:
       profile:
         description: Build profile
         required: true
-        default: production
+        default: preview
         type: choice
         options:
-          - production
           - preview
+          - production
           - development
 
 jobs:
@@ -27,7 +27,8 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
+          cache: npm
 
       - name: Setup EAS
         uses: expo/expo-github-action@v8
@@ -36,7 +37,7 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
 
-      - name: Build
-        run: eas build --platform all --profile ${{ github.event.inputs.profile || 'production' }} --non-interactive
+      - name: Build Android
+        run: eas build --platform android --profile ${{ github.event.inputs.profile || 'preview' }} --non-interactive
