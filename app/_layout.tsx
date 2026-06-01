@@ -11,11 +11,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
+import { View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { UpdateBanner } from "@/components/UpdateBanner";
 import { setAuthTokenGetter, setBaseUrl } from "@workspace/api-client-react";
 
 // Set the API base URL from the Expo public domain env var (outside component)
@@ -80,18 +82,21 @@ function InitialLayout() {
   }, [isLoaded, isSignedIn, segments]);
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(auth)" options={{ headerShown: false, animation: "fade" }} />
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="invoice/[id]" options={{ headerShown: false, presentation: "card" }} />
-      <Stack.Screen name="estimate/[id]" options={{ headerShown: false, presentation: "card" }} />
-      <Stack.Screen name="customer/[id]" options={{ headerShown: false, presentation: "card" }} />
-      <Stack.Screen name="new-invoice" options={{ headerShown: false, presentation: "modal" }} />
-      <Stack.Screen name="new-estimate" options={{ headerShown: false, presentation: "modal" }} />
-      <Stack.Screen name="new-customer" options={{ headerShown: false, presentation: "modal" }} />
-      <Stack.Screen name="settings" options={{ headerShown: false, presentation: "card" }} />
-      <Stack.Screen name="quick-checkout" options={{ headerShown: false, presentation: "modal" }} />
-    </Stack>
+    <View style={{ flex: 1 }}>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(auth)" options={{ headerShown: false, animation: "fade" }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="invoice/[id]" options={{ headerShown: false, presentation: "card" }} />
+        <Stack.Screen name="estimate/[id]" options={{ headerShown: false, presentation: "card" }} />
+        <Stack.Screen name="customer/[id]" options={{ headerShown: false, presentation: "card" }} />
+        <Stack.Screen name="new-invoice" options={{ headerShown: false, presentation: "modal" }} />
+        <Stack.Screen name="new-estimate" options={{ headerShown: false, presentation: "modal" }} />
+        <Stack.Screen name="new-customer" options={{ headerShown: false, presentation: "modal" }} />
+        <Stack.Screen name="settings" options={{ headerShown: false, presentation: "card" }} />
+        <Stack.Screen name="quick-checkout" options={{ headerShown: false, presentation: "modal" }} />
+      </Stack>
+      <UpdateBanner />
+    </View>
   );
 }
 
