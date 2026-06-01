@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "Paydan",
+    "slug": "invoice-maker-app",
+    "owner": "EdwardDanielyan",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "invoice-maker-app",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#5b5bd6"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.paydan.invoicemaker"
+    },
+    "android": {
+      "package": "com.paydan.invoicemaker"
+    },
+    "web": {
+      "favicon": "./assets/images/icon.png"
+    },
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "origin": "https://replit.com/"
+        }
+      ],
+      "expo-font",
+      "expo-web-browser",
+      "expo-secure-store"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}
