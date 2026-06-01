@@ -66,7 +66,7 @@ export default function NewInvoiceScreen() {
   const selectedCustomer = customers.find((c) => c.id === customerId);
   const filteredCustomers = customerSearch
     ? customers.filter((c) =>
-        [c.name, c.company, c.email].join(" ").toLowerCase().includes(customerSearch.toLowerCase())
+        [c.fullName, c.companyName, c.email].join(" ").toLowerCase().includes(customerSearch.toLowerCase())
       )
     : customers;
 
@@ -103,6 +103,7 @@ export default function NewInvoiceScreen() {
         description: i.description.trim(),
         quantity: parseFloat(i.quantity) || 1,
         unitPrice: parseFloat(i.unitPrice) || 0,
+        taxable: true,
       }));
 
       const inv = await createInvoice({
@@ -159,11 +160,11 @@ export default function NewInvoiceScreen() {
             <View style={styles.customerSelected}>
               <View style={[styles.customerAvatar, { backgroundColor: colors.primary + "20" }]}>
                 <Text style={[styles.customerAvatarText, { color: colors.primary }]}>
-                  {(selectedCustomer.company || selectedCustomer.name || "?")[0].toUpperCase()}
+                  {(selectedCustomer.companyName || selectedCustomer.fullName || "?")[0].toUpperCase()}
                 </Text>
               </View>
               <Text style={[styles.customerName, { color: colors.foreground }]}>
-                {selectedCustomer.company || selectedCustomer.name}
+                {selectedCustomer.companyName || selectedCustomer.fullName}
               </Text>
             </View>
           ) : (
@@ -350,10 +351,10 @@ export default function NewInvoiceScreen() {
                   }}
                 >
                   <Text style={[styles.pickerItemName, { color: colors.foreground }]}>
-                    {item.company || item.name}
+                    {item.companyName || item.fullName}
                   </Text>
-                  {item.company && item.name && (
-                    <Text style={[styles.pickerItemSub, { color: colors.mutedForeground }]}>{item.name}</Text>
+                  {item.companyName && item.fullName && (
+                    <Text style={[styles.pickerItemSub, { color: colors.mutedForeground }]}>{item.fullName}</Text>
                   )}
                 </TouchableOpacity>
               )}
