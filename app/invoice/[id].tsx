@@ -65,12 +65,7 @@ export default function InvoiceDetailScreen() {
 
   const topPad = isWeb ? 67 : insets.top;
   const isPaid = invoice.status === "paid";
-  const items = (invoice.lineItems ?? []) as Array<{
-    description: string;
-    quantity: number;
-    unitPrice: number;
-    total: number;
-  }>;
+  const items = invoice.lineItems ?? [];
 
   const openPaymentLink = async (methods?: string[]) => {
     try {
@@ -114,7 +109,7 @@ export default function InvoiceDetailScreen() {
 
   const handleMarkPaid = async () => {
     try {
-      await markInvoicePaid({ id: numId, data: { method: payMethod, note: payNote || undefined } });
+      await markInvoicePaid({ id: numId, data: { paymentMethod: payMethod as "cash" | "card" | "check", note: payNote || undefined } });
       await qc.invalidateQueries({ queryKey: ["getInvoice"] });
       await qc.invalidateQueries({ queryKey: ["listInvoices"] });
       await refetch();
@@ -175,7 +170,7 @@ export default function InvoiceDetailScreen() {
           >
             <Text style={[styles.cardLabel, { color: colors.mutedForeground }]}>Bill To</Text>
             <Text style={[styles.cardValue, { color: colors.foreground }]}>
-              {invoice.customer.company || invoice.customer.name}
+              {invoice.customer.companyName || invoice.customer.fullName}
             </Text>
             {invoice.customer.email && (
               <Text style={[styles.cardSub, { color: colors.mutedForeground }]}>{invoice.customer.email}</Text>
@@ -213,7 +208,7 @@ export default function InvoiceDetailScreen() {
                 </Text>
               </View>
               <Text style={[styles.lineTotal, { color: colors.foreground }]}>
-                {formatCurrency(item.total)}
+                {formatCurrency(item.quantity * item.unitPrice)}
               </Text>
             </View>
           ))}
