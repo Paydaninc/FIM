@@ -42,7 +42,7 @@ export default function CustomerDetailScreen() {
     );
   }
 
-  const displayName = customer.company || customer.name || "Customer";
+  const displayName = customer.companyName || customer.fullName || "Customer";
   const topPad = isWeb ? 67 : insets.top;
 
   return (
@@ -84,8 +84,8 @@ export default function CustomerDetailScreen() {
           <Text style={[styles.avatarText, { color: colors.primary }]}>{initials(displayName)}</Text>
         </View>
         <Text style={[styles.name, { color: colors.foreground }]}>{displayName}</Text>
-        {customer.company && customer.name && (
-          <Text style={[styles.subName, { color: colors.mutedForeground }]}>{customer.name}</Text>
+        {customer.companyName && customer.fullName && (
+          <Text style={[styles.subName, { color: colors.mutedForeground }]}>{customer.fullName}</Text>
         )}
         <View style={styles.contactRow}>
           {customer.email ? (
@@ -106,9 +106,9 @@ export default function CustomerDetailScreen() {
       {stats && (
         <View style={styles.statsRow}>
           <StatBox label="Total Revenue" value={formatCurrency(stats.totalRevenue)} colors={colors} />
-          <StatBox label="Invoices" value={String(stats.invoiceCount ?? 0)} colors={colors} />
-          <StatBox label="Paid" value={String(stats.paidCount ?? 0)} colors={colors} accent={colors.success} />
-          <StatBox label="Outstanding" value={formatCurrency(stats.outstandingAmount)} colors={colors} accent={colors.warning} />
+          <StatBox label="Invoices" value={String(stats.totalInvoices ?? 0)} colors={colors} />
+          <StatBox label="Paid" value={String(stats.paidInvoices ?? 0)} colors={colors} accent={colors.success} />
+          <StatBox label="Unpaid" value={String(stats.unpaidInvoices ?? 0)} colors={colors} accent={colors.warning} />
         </View>
       )}
 
