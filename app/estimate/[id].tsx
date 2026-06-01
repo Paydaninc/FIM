@@ -46,7 +46,7 @@ export default function EstimateDetailScreen() {
   }
 
   const topPad = isWeb ? 67 : insets.top;
-  const items = (estimate.lineItems ?? []) as Array<{ description: string; quantity: number; unitPrice: number; total: number }>;
+  const items = estimate.lineItems ?? [];
 
   const handleConvert = async () => {
     Alert.alert("Convert to Invoice", "This will create a new invoice based on this estimate.", [
@@ -106,7 +106,7 @@ export default function EstimateDetailScreen() {
           <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <Text style={[styles.cardLabel, { color: colors.mutedForeground }]}>Customer</Text>
             <Text style={[styles.cardValue, { color: colors.foreground }]}>
-              {estimate.customer.company || estimate.customer.name}
+              {estimate.customer.companyName || estimate.customer.fullName}
             </Text>
             {estimate.customer.email && (
               <Text style={[styles.cardSub, { color: colors.mutedForeground }]}>{estimate.customer.email}</Text>
@@ -136,7 +136,7 @@ export default function EstimateDetailScreen() {
                 </Text>
               </View>
               <Text style={[styles.lineTotal, { color: colors.foreground }]}>
-                {formatCurrency(item.total)}
+                {formatCurrency(item.quantity * item.unitPrice)}
               </Text>
             </View>
           ))}
