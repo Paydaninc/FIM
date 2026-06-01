@@ -41,11 +41,11 @@ export default function NewCustomerScreen() {
     try {
       await createCustomer({
         data: {
-          name: name.trim(),
-          company: company.trim() || null,
-          email: email.trim() || null,
-          phone: phone.trim() || null,
-          address: address.trim() || null,
+          fullName: name.trim(),
+          companyName: company.trim() || undefined,
+          email: email.trim() || undefined,
+          phone: phone.trim() || undefined,
+          billingAddress: address.trim() || undefined,
         },
       });
       await qc.invalidateQueries({ queryKey: ["listCustomers"] });
