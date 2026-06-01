@@ -1,0 +1,27 @@
+kind = "mobile"
+previewPath = "/mobile/"
+title = "Invoice Maker App"
+version = "1.0.0"
+id = "artifacts/invoice-maker-app"
+router = "expo-domain"
+
+[[integratedSkills]]
+name = "expo"
+version = "1.0.0"
+
+[[services]]
+ensurePreviewReachable = "/status"
+name = "expo"
+paths = [ "/mobile/" ]
+localPort = 18160
+
+[services.development]
+run = "pnpm --filter @workspace/invoice-maker-app run dev"
+
+[services.production]
+build = [ "echo", "invoice-maker-app build skipped" ]
+run = [ "pnpm", "--filter", "@workspace/invoice-maker-app", "run", "serve" ]
+
+[services.env]
+PORT = "18160"
+BASE_PATH = "/mobile/"
