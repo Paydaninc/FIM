@@ -2,7 +2,7 @@
   "expo": {
     "name": "Paydan",
     "slug": "invoice-maker-app",
-    "owner": "EdwardDanielyan",
+    "owner": "paydan-inc",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -38,6 +38,11 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b5df384e-9892-449f-8d3d-73598f7a3856"
+      }
     }
   }
 }
