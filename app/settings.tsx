@@ -62,7 +62,7 @@ export default function SettingsScreen() {
       setBusinessName(settings.businessName ?? "");
       setPhone(settings.phone ?? "");
       setAddress(settings.address ?? "");
-      setEmail(settings.businessEmail ?? "");
+      setEmail(settings.email ?? "");
       setDefaultNotes(settings.defaultNotes ?? "");
     }
   }, [settings]);
@@ -77,7 +77,7 @@ export default function SettingsScreen() {
           businessName: businessName || undefined,
           phone: phone || undefined,
           address: address || undefined,
-          businessEmail: email || undefined,
+          email: email || undefined,
           defaultNotes: defaultNotes || undefined,
         },
       });
@@ -142,7 +142,7 @@ export default function SettingsScreen() {
 
   const handleConnectStripe = async () => {
     try {
-      const result = await startStripeOnboarding({});
+      const result = await startStripeOnboarding();
       if (result.url) {
         await Linking.openURL(result.url);
       }
@@ -151,7 +151,7 @@ export default function SettingsScreen() {
     }
   };
 
-  const stripeConnected = stripeStatus?.connected && stripeStatus?.chargesEnabled;
+  const stripeConnected = stripeStatus?.stripeOnboardingComplete && stripeStatus?.stripeChargesEnabled;
 
   if (isLoading) {
     return (
@@ -472,4 +472,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   connectBtnText: { color: "#fff", fontSize: 15, fontFamily: "Inter_600SemiBold" },
+  sectionCard: {
+    borderRadius: 12,
+    borderWidth: 1,
+    padding: 16,
+    marginBottom: 10,
+  },
+  input: {
+    borderRadius: 10,
+    borderWidth: 1,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+    fontSize: 15,
+    fontFamily: "Inter_400Regular",
+  },
 });
