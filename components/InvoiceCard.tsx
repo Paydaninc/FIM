@@ -8,8 +8,8 @@ interface Invoice {
   invoiceNumber: string | null;
   status: string;
   total: number | null;
-  dueDate: string | null;
-  customer?: { name: string | null; company: string | null } | null;
+  dueDate?: string | null;
+  customer?: { fullName: string; companyName?: string | null } | null;
 }
 
 interface Props {
@@ -19,7 +19,7 @@ interface Props {
 
 export function InvoiceCard({ invoice, onPress }: Props) {
   const colors = useColors();
-  const customerName = invoice.customer?.company || invoice.customer?.name || "No customer";
+  const customerName = invoice.customer?.companyName || invoice.customer?.fullName || "No customer";
 
   return (
     <TouchableOpacity
