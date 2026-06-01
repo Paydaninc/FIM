@@ -8,8 +8,8 @@ interface Estimate {
   estimateNumber: string | null;
   status: string;
   total: number | null;
-  expiryDate: string | null;
-  customer?: { name: string | null; company: string | null } | null;
+  expiryDate?: string | null;
+  customer?: { fullName: string; companyName?: string | null } | null;
 }
 
 interface Props {
@@ -19,7 +19,7 @@ interface Props {
 
 export function EstimateCard({ estimate, onPress }: Props) {
   const colors = useColors();
-  const customerName = estimate.customer?.company || estimate.customer?.name || "No customer";
+  const customerName = estimate.customer?.companyName || estimate.customer?.fullName || "No customer";
 
   return (
     <TouchableOpacity
