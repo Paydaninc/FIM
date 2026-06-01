@@ -53,7 +53,7 @@ export default function NewEstimateScreen() {
   const selectedCustomer = customers.find((c) => c.id === customerId);
   const filteredCustomers = customerSearch
     ? customers.filter((c) =>
-        [c.name, c.company, c.email].join(" ").toLowerCase().includes(customerSearch.toLowerCase())
+        [c.fullName, c.companyName, c.email].join(" ").toLowerCase().includes(customerSearch.toLowerCase())
       )
     : customers;
 
@@ -83,6 +83,7 @@ export default function NewEstimateScreen() {
             description: i.description.trim(),
             quantity: parseFloat(i.quantity) || 1,
             unitPrice: parseFloat(i.unitPrice) || 0,
+            taxable: true,
           })),
           notes: notes.trim() || undefined,
           expiryDate: expiryDate || undefined,
@@ -129,11 +130,11 @@ export default function NewEstimateScreen() {
             <View style={styles.customerSelected}>
               <View style={[styles.customerAvatar, { backgroundColor: colors.primary + "20" }]}>
                 <Text style={[styles.customerAvatarText, { color: colors.primary }]}>
-                  {(selectedCustomer.company || selectedCustomer.name || "?")[0].toUpperCase()}
+                  {(selectedCustomer.companyName || selectedCustomer.fullName || "?")[0].toUpperCase()}
                 </Text>
               </View>
               <Text style={[styles.customerName, { color: colors.foreground }]}>
-                {selectedCustomer.company || selectedCustomer.name}
+                {selectedCustomer.companyName || selectedCustomer.fullName}
               </Text>
             </View>
           ) : (
@@ -254,7 +255,7 @@ export default function NewEstimateScreen() {
                   style={[styles.pickerItem, { borderBottomColor: colors.border }]}
                   onPress={() => { setCustomerId(item.id); setShowCustomerPicker(false); setCustomerSearch(""); }}
                 >
-                  <Text style={[styles.pickerName, { color: colors.foreground }]}>{item.company || item.name}</Text>
+                  <Text style={[styles.pickerName, { color: colors.foreground }]}>{item.companyName || item.fullName}</Text>
                 </TouchableOpacity>
               )}
               style={{ maxHeight: 300 }}
