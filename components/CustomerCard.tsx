@@ -5,10 +5,10 @@ import { initials } from "@/utils/format";
 
 interface Customer {
   id: number;
-  name: string | null;
-  company: string | null;
-  email: string | null;
-  phone: string | null;
+  fullName: string;
+  companyName?: string | null;
+  email?: string | null;
+  phone?: string | null;
 }
 
 interface Props {
@@ -18,8 +18,8 @@ interface Props {
 
 export function CustomerCard({ customer, onPress }: Props) {
   const colors = useColors();
-  const displayName = customer.company || customer.name || "Unknown";
-  const subName = customer.company && customer.name ? customer.name : customer.email;
+  const displayName = customer.companyName || customer.fullName || "Unknown";
+  const subName = customer.companyName && customer.fullName ? customer.fullName : customer.email;
 
   return (
     <TouchableOpacity
