@@ -2,8 +2,9 @@ name: EAS Build
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+    paths:
+      - 'artifacts/invoice-maker-app/**'
   workflow_dispatch:
     inputs:
       profile:
@@ -11,31 +12,31 @@ on:
         required: true
         default: preview
         type: choice
-        options:
-          - preview
-          - production
-          - development
+        options: [preview, production, development]
 
 jobs:
   build:
-    name: EAS Build
+    name: Build Android APK
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: artifacts/invoice-maker-app
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
         with:
-          node-version: 22
+          distribution: temurin
+          java-version: '17'
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 10
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
 
       - name: Setup EAS
         uses: expo/expo-github-action@v8
@@ -46,6 +47,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build Android
-        run: eas build --platform android --profile ${{ github.event.inputs.profile || 'preview' }} --non-interactive
+      - name: Build Android APK (local — no cloud credits used)
+        working-directory: artifacts/invoice-maker-app
+        run: eas build --platform android --profile ${{ github.event.inputs.profile || 'preview' }} --local --output ./app.apk --non-interactive
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk-${{ github.run_number }}
+          path: artifacts/invoice-maker-app/app.apk
+          retention-days: 30
 
