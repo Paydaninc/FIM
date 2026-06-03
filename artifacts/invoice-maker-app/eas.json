@@ -1,0 +1,43 @@
+{
+  "cli": {
+    "version": ">= 16.0.0",
+    "requireCommit": false
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "channel": "development",
+      "ios": {
+        "simulator": true
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "channel": "preview",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_Z3VpZGluZy1ndWxsLTc3LmNsZXJrLmFjY291bnRzLmRldiQ",
+        "EXPO_PUBLIC_DOMAIN": "5dd2e180-0760-4879-b952-1074eae29f8c-00-1j31dpkrowdt1.riker.replit.dev"
+      }
+    },
+    "production": {
+      "autoIncrement": true,
+      "channel": "production",
+      "env": {
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_Z3VpZGluZy1ndWxsLTc3LmNsZXJrLmFjY291bnRzLmRldiQ",
+        "EXPO_PUBLIC_DOMAIN": "5dd2e180-0760-4879-b952-1074eae29f8c-00-1j31dpkrowdt1.riker.replit.dev"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "android": {
+        "serviceAccountKeyPath": "./google-service-account.json",
+        "track": "internal"
+      }
+    }
+  }
+}
