@@ -20,6 +20,9 @@ jobs:
   build:
     name: EAS Build
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: artifacts/invoice-maker-app
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -29,6 +32,11 @@ jobs:
         with:
           node-version: 22
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Setup EAS
         uses: expo/expo-github-action@v8
         with:
@@ -36,7 +44,8 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps
+        run: pnpm install
 
       - name: Build Android
         run: eas build --platform android --profile ${{ github.event.inputs.profile || 'preview' }} --non-interactive
+
