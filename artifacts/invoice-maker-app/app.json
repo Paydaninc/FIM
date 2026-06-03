@@ -1,0 +1,61 @@
+{
+  "expo": {
+    "name": "Invoice Maker",
+    "slug": "invoice-maker-app",
+    "owner": "paydan-inc",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "invoice-maker-app",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/b5df384e-9892-449f-8d3d-73598f7a3856",
+      "enabled": true,
+      "fallbackToCacheTimeout": 3000,
+      "checkAutomatically": "ON_LOAD"
+    },
+    "splash": {
+      "image": "./assets/images/icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#5b5bd6"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.paydan.invoicemaker"
+    },
+    "android": {
+      "package": "com.paydan.invoicemaker",
+      "minSdkVersion": 23,
+      "targetSdkVersion": 35,
+      "compileSdkVersion": 35
+    },
+    "web": {
+      "favicon": "./assets/images/icon.png"
+    },
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "origin": "https://replit.com/"
+        }
+      ],
+      "expo-font",
+      "expo-web-browser",
+      "expo-secure-store",
+      "expo-updates"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b5df384e-9892-449f-8d3d-73598f7a3856"
+      }
+    }
+  }
+}
