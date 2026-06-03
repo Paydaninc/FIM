@@ -28,7 +28,10 @@
       "bundleIdentifier": "com.paydan.invoicemaker"
     },
     "android": {
-      "package": "com.paydan.invoicemaker"
+      "package": "com.paydan.invoicemaker",
+      "minSdkVersion": 23,
+      "targetSdkVersion": 35,
+      "compileSdkVersion": 35
     },
     "web": {
       "favicon": "./assets/images/icon.png"
