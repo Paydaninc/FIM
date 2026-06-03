@@ -1,0 +1,55 @@
+name: OTA Update
+
+# Publishes an over-the-air JS bundle to all users on the production channel
+# every time code is merged to main — no app store release needed.
+#
+# One-time setup (do this once locally before the workflow can succeed):
+#   1. expo login  (or set EXPO_TOKEN in GitHub repo secrets)
+#   2. eas init    (writes the real projectId into app.json — commit the result)
+#   3. Add EXPO_TOKEN to GitHub → Settings → Secrets → Actions
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'app/**'
+      - 'components/**'
+      - 'hooks/**'
+      - 'lib/**'
+      - 'assets/**'
+      - 'app.json'
+      - 'package.json'
+
+jobs:
+  publish:
+    name: Publish OTA Update
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Typecheck
+        run: npx tsc -p tsconfig.json --noEmit
+        continue-on-error: false
+
+      - name: Publish OTA update
+        run: |
+          eas update \
+            --channel production \
+            --message "Auto publish: ${{ github.sha }}" \
+            --non-interactive
