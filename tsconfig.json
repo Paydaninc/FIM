@@ -1,21 +1,25 @@
 {
-  "extends": "expo/tsconfig.base",
-  "compilerOptions": {
-    "baseUrl": ".",
-    "strict": true,
-    "paths": {
-      "@/*": [
-        "./*"
-      ],
-      "@workspace/api-client-react": [
-        "./lib/api-client-react/src/index.ts"
-      ]
+  "extends": "./tsconfig.base.json",
+  "compileOnSave": false,
+  "files": [],
+  "references": [
+    {
+      "path": "./lib/db"
+    },
+    {
+      "path": "./lib/api-client-react"
+    },
+    {
+      "path": "./lib/api-zod"
+    },
+    {
+      "path": "./lib/pos-db"
+    },
+    {
+      "path": "./lib/pos-api-client-react"
+    },
+    {
+      "path": "./lib/pos-api-zod"
     }
-  },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    ".expo/types/**/*.ts",
-    "expo-env.d.ts"
   ]
 }
