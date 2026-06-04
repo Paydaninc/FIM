@@ -51,9 +51,18 @@ jobs:
           EXPO_PUBLIC_DOMAIN: 5dd2e180-0760-4879-b952-1074eae29f8c-00-1j31dpkrowdt1.riker.replit.dev
         run: npx expo prebuild --platform android --clean --no-install
 
-      - name: Build APK via Gradle
+      - name: Sign release build with debug keystore
         working-directory: artifacts/invoice-maker-app/android
-        run: ./gradlew assembleDebug --no-daemon
+        run: |
+          # Patch build.gradle: sign the release buildType with the debug keystore so
+          # assembleRelease bundles JS without requiring a production certificate.
+          sed -i 's/signingConfig signingConfigs\.release/signingConfig signingConfigs.debug/g' app/build.gradle
+          echo "Patched signing config:"
+          grep -A2 "buildTypes" app/build.gradle | head -20
+
+      - name: Build release APK via Gradle
+        working-directory: artifacts/invoice-maker-app/android
+        run: ./gradlew assembleRelease --no-daemon
         env:
           GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx4g
 
@@ -61,5 +70,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: android-apk-${{ github.run_number }}
-          path: artifacts/invoice-maker-app/android/app/build/outputs/apk/debug/app-debug.apk
+          path: artifacts/invoice-maker-app/android/app/build/outputs/apk/release/app-release.apk
           retention-days: 30
