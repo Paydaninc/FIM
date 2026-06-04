@@ -10,7 +10,7 @@ import * as SecureStore from "expo-secure-store";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
@@ -112,15 +112,27 @@ export default function RootLayout() {
     Inter_600SemiBold,
     Inter_700Bold,
   });
+  const splashHidden = useRef(false);
 
-  useEffect(() => {
-    if (fontsLoaded || fontError) {
-      SplashScreen.hideAsync();
+  const hideSplash = () => {
+    if (!splashHidden.current) {
+      splashHidden.current = true;
+      SplashScreen.hideAsync().catch(() => {});
     }
+  };
+
+  // Hide splash when fonts load or error
+  useEffect(() => {
+    if (fontsLoaded || fontError) hideSplash();
   }, [fontsLoaded, fontError]);
 
-  if (!fontsLoaded && !fontError) return null;
+  // Guaranteed fallback — never freeze on splash screen longer than 3s
+  useEffect(() => {
+    const t = setTimeout(hideSplash, 3000);
+    return () => clearTimeout(t);
+  }, []);
 
+  // Don't block rendering on font load — fall back to system fonts if needed
   const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY ?? "";
 
   return (
