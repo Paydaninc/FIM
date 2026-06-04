@@ -53,7 +53,7 @@ jobs:
 
       - name: Build APK via Gradle
         working-directory: artifacts/invoice-maker-app/android
-        run: ./gradlew assembleRelease --no-daemon
+        run: ./gradlew assembleDebug --no-daemon
         env:
           GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx4g
 
@@ -61,5 +61,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: android-apk-${{ github.run_number }}
-          path: artifacts/invoice-maker-app/android/app/build/outputs/apk/release/app-release.apk
+          path: artifacts/invoice-maker-app/android/app/build/outputs/apk/debug/app-debug.apk
           retention-days: 30
