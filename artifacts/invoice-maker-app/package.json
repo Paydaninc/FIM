@@ -63,5 +63,7 @@
     "zod": "catalog:",
     "zod-validation-error": "^3.4.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "expo-auth-session": "~7.0.11"
+  }
 }
