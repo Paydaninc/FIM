@@ -44,10 +44,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Strip Solana codegenConfig from pnpm store (prevents RN New-Arch Gradle plugin from linking them)
+      - name: Strip Solana native-module hooks from pnpm store (prevents RN autolinking)
         run: |
           python3 - <<'PYEOF'
-          import os, json, pathlib
+          import json, pathlib, shutil
 
           patterns = [
             "solana-mobile+mobile-wallet-adapter-protocol",
@@ -60,29 +60,33 @@ jobs:
           for entry in store.iterdir():
             if not entry.is_dir():
               continue
-            name_lower = entry.name.lower()
-            if not any(p in name_lower for p in patterns):
+            if not any(p in entry.name.lower() for p in patterns):
               continue
-            # package.json lives two levels deep: <entry>/node_modules/<pkg>/package.json
+            print(f"Found matching pnpm entry: {entry.name}")
+            # package.json is at: <entry>/node_modules/<scope?>/<pkg>/package.json
+            # scoped pkg = 4 parts deep, unscoped = 3 parts; allow up to 5 to be safe
             for pkg_json in entry.rglob("package.json"):
-              # skip node_modules inside the package itself
               parts = pkg_json.relative_to(entry).parts
-              if len(parts) > 3:
+              if len(parts) > 5 or parts[0] != "node_modules":
                 continue
               try:
                 data = json.loads(pkg_json.read_text())
               except Exception:
                 continue
-              if "codegenConfig" not in data and "expo-module" not in str(data):
-                continue
               changed = False
               if data.pop("codegenConfig", None) is not None:
+                pkg_json.write_text(json.dumps(data, indent=2))
+                print(f"  Stripped codegenConfig: {pkg_json}")
+                changed = True
+              # Also remove expo-module.config.json so expo-autolinking skips it
+              expo_cfg = pkg_json.parent / "expo-module.config.json"
+              if expo_cfg.exists():
+                expo_cfg.unlink()
+                print(f"  Removed expo-module.config.json: {expo_cfg}")
                 changed = True
               if changed:
-                pkg_json.write_text(json.dumps(data, indent=2))
-                print(f"Stripped codegenConfig from: {pkg_json}")
                 patched += 1
-          print(f"Total patched: {patched}")
+          print(f"Total entries patched: {patched}")
           PYEOF
 
       - name: Expo Prebuild (generate native Android project)
