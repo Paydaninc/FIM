@@ -44,6 +44,19 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Remove Solana native modules (transitive deps from @clerk/clerk-js, crash on Android)
+        run: |
+          for pkg in \
+            "solana-mobile+mobile-wallet-adapter-protocol" \
+            "solana-mobile+mobile-wallet-adapter-protocol-web3js" \
+            "solana-mobile+wallet-adapter-mobile"; do
+            find node_modules/.pnpm -path "*${pkg}*" \( \
+              -name "expo-module.config.json" -o \
+              -name "react-native.config.js" \
+            \) -exec rm -f {} \; -print
+          done
+          echo "Solana native module configs removed."
+
       - name: Expo Prebuild (generate native Android project)
         working-directory: artifacts/invoice-maker-app
         env:
