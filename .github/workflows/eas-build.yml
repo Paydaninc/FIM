@@ -9,18 +9,12 @@ on:
 
 jobs:
   build:
-    name: Build Android APK
+    name: EAS Android APK
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Setup Java 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -32,114 +26,38 @@ jobs:
         with:
           node-version: 22
 
-      - name: Cache Gradle
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: gradle-${{ hashFiles('artifacts/invoice-maker-app/package.json') }}
-          restore-keys: gradle-
-
       - name: Install dependencies
         run: pnpm install
 
-      - name: Strip Solana native-module hooks from pnpm store (prevents RN autolinking)
+      - name: Build with EAS (production APK)
+        working-directory: artifacts/invoice-maker-app
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          EAS_BUILD_NO_EXPO_GO_WARNING: true
+        run: |
+          npx eas-cli build \
+            --platform android \
+            --profile production \
+            --non-interactive \
+            --json \
+            --no-wait \
+            2>&1 | tee /tmp/eas-output.txt
+          cat /tmp/eas-output.txt
+
+      - name: Print EAS build URL
         run: |
           python3 - <<'PYEOF'
-          import json, pathlib, shutil
-
-          patterns = [
-            "solana-mobile+mobile-wallet-adapter-protocol",
-            "solana-mobile+wallet-adapter-mobile",
-            "solana+wallet-adapter",
-          ]
-
-          store = pathlib.Path("node_modules/.pnpm")
-          patched = 0
-          for entry in store.iterdir():
-            if not entry.is_dir():
-              continue
-            if not any(p in entry.name.lower() for p in patterns):
-              continue
-            print(f"Found matching pnpm entry: {entry.name}")
-            # package.json is at: <entry>/node_modules/<scope?>/<pkg>/package.json
-            # scoped pkg = 4 parts deep, unscoped = 3 parts; allow up to 5 to be safe
-            for pkg_json in entry.rglob("package.json"):
-              parts = pkg_json.relative_to(entry).parts
-              if len(parts) > 5 or parts[0] != "node_modules":
-                continue
-              try:
-                data = json.loads(pkg_json.read_text())
-              except Exception:
-                continue
-              changed = False
-              if data.pop("codegenConfig", None) is not None:
-                pkg_json.write_text(json.dumps(data, indent=2))
-                print(f"  Stripped codegenConfig: {pkg_json}")
-                changed = True
-              # Also remove expo-module.config.json so expo-autolinking skips it
-              expo_cfg = pkg_json.parent / "expo-module.config.json"
-              if expo_cfg.exists():
-                expo_cfg.unlink()
-                print(f"  Removed expo-module.config.json: {expo_cfg}")
-                changed = True
-              if changed:
-                patched += 1
-          print(f"Total entries patched: {patched}")
+          import json, re, pathlib
+          raw = pathlib.Path("/tmp/eas-output.txt").read_text()
+          # Try to parse the JSON array EAS outputs with --json
+          try:
+            builds = json.loads(re.search(r'\[.*\]', raw, re.DOTALL).group())
+            for b in builds:
+              print("Build ID  :", b.get("id"))
+              print("Status    :", b.get("status"))
+              print("Build URL :", b.get("buildUrl") or b.get("url") or "(pending)")
+              print("EAS page  :", f"https://expo.dev/accounts/pdanielyan/projects/invoice-maker-app/builds/{b.get('id')}")
+          except Exception as e:
+            print("Could not parse JSON, raw output:")
+            print(raw[-2000:])
           PYEOF
-
-      - name: Expo Prebuild (generate native Android project)
-        working-directory: artifacts/invoice-maker-app
-        env:
-          EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_Z3VpZGluZy1ndWxsLTc3LmNsZXJrLmFjY291bnRzLmRldiQ
-          EXPO_PUBLIC_DOMAIN: 5dd2e180-0760-4879-b952-1074eae29f8c-00-1j31dpkrowdt1.riker.replit.dev
-        run: npx expo prebuild --platform android --clean --no-install
-
-      - name: Remove any remaining Solana references from prebuild Android output
-        working-directory: artifacts/invoice-maker-app
-        run: |
-          echo "=== Solana references in android/ before patch ==="
-          grep -rn "solana-mobile\|SolanaMobile\|MobileWalletAdapter" android/ 2>/dev/null || echo "(none)"
-
-          # settings.gradle: remove the include line AND the projectDir assignment line (they appear together)
-          if [ -f android/settings.gradle ]; then
-            python3 - <<'PYEOF'
-          import re, pathlib
-          p = pathlib.Path("android/settings.gradle")
-          lines = p.read_text().splitlines(keepends=True)
-          cleaned = [l for l in lines if "solana-mobile" not in l.lower() and "solanamobile" not in l.lower()]
-          p.write_text("".join(cleaned))
-          removed = len(lines) - len(cleaned)
-          print(f"settings.gradle: removed {removed} line(s)")
-          PYEOF
-          fi
-
-          # Any other generated files (ExpoModulesPackageList, autolinking JSON, etc.)
-          for f in $(grep -rl "solana-mobile\|SolanaMobile\|MobileWalletAdapter" android/ 2>/dev/null); do
-            sed -i '/solana-mobile/Id; /SolanaMobile/Id; /MobileWalletAdapter/Id' "$f"
-            echo "Patched: $f"
-          done
-
-          echo "=== Verification (should be empty) ==="
-          grep -rn "solana-mobile\|SolanaMobile\|MobileWalletAdapter" android/ 2>/dev/null || echo "(no solana references remain — OK)"
-
-      - name: Sign release build with debug keystore
-        working-directory: artifacts/invoice-maker-app/android
-        run: |
-          sed -i 's/signingConfig signingConfigs\.release/signingConfig signingConfigs.debug/g' app/build.gradle
-          echo "Patched signing config:"
-          grep -A2 "buildTypes" app/build.gradle | head -20
-
-      - name: Build release APK via Gradle
-        working-directory: artifacts/invoice-maker-app/android
-        run: ./gradlew assembleRelease --no-daemon
-        env:
-          GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx4g
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: android-apk-${{ github.run_number }}
-          path: artifacts/invoice-maker-app/android/app/build/outputs/apk/release/app-release.apk
-          retention-days: 30
