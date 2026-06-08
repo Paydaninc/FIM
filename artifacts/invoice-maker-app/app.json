@@ -2,7 +2,7 @@
   "expo": {
     "name": "Invoice Maker",
     "slug": "invoice-maker-app",
-    "owner": "paydan-inc",
+    "owner": "pdanielyan",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -25,7 +25,8 @@
       "package": "com.paydan.invoicemaker",
       "minSdkVersion": 23,
       "targetSdkVersion": 35,
-      "compileSdkVersion": 35
+      "compileSdkVersion": 35,
+      "versionCode": 2
     },
     "web": {
       "favicon": "./assets/images/icon.png"
@@ -55,7 +56,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "b5df384e-9892-449f-8d3d-73598f7a3856"
+        "projectId": "acc7a084-94d5-4c85-b4e3-77535d4122ac"
       }
     }
   }
